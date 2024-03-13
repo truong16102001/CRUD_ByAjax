@@ -1,0 +1,297 @@
+﻿@{
+    ViewBag.Title = "Products and Categories";
+}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+
+<h2>Products</h2>
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-6 offset-md-6">
+                <button class="btn btn-primary float-right" id="btnAdd">+Add</button>
+            </div>
+        </div>
+    </div>
+    <div id="product-container">
+        <table class="table table-striped table-bordered" style="width:100%" id="tblProduct">
+            <thead class="thead-dark">
+            <th>Product Id</th>
+            <th>Product Name</th>
+            <th>Unit Price</th>
+            <th>Unit In Stock</th>
+            <th>Image</th>
+            <th>Category</th>
+            <th></th>
+            <th></th>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+@*add modal*@
+<div class="modal" id="modalAdd" tabindex="-1" role="dialog" aria-labelledby="editModel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Add Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="col">
+                        <div class="row">
+                            <input type="text" id="txtName1" class="form-control" placeholder="Name">
+                        </div>
+                        <div class="row">
+                            <input type="number" id="txtUnitPrice1" class="form-control" placeholder="UnitPrice">
+                        </div>
+                        <div class="row">
+                            <input type="number" id="txtUnitInStock1" class="form-control" placeholder="Unit In Stock">
+                        </div>
+                        <div class="row">
+                            <input type="text" id="txtImage1" class="form-control" placeholder="Image">
+                        </div>
+                        <div class="row">
+                            <select id="category-select1">
+                                <!-- Dữ liệu Categories sẽ được hiển thị ở đây -->
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnInsert">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*edit product modal*@
+<div class="modal" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="editModel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Edit Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="col">
+                        <div class="row">
+                            <input type="text" id="txtProductId2" class="form-control" readonly>
+                        </div>
+                        <div class="row">
+                            <input type="text" id="txtName2" class="form-control">
+                        </div>
+                        <div class="row">
+                            <input type="number" id="txtUnitPrice2" class="form-control">
+                        </div>
+                        <div class="row">
+                            <input type="number" id="txtUnitInStock2" class="form-control">
+                        </div>
+                        <div class="row">
+                            <input type="text" id="txtImage2" class="form-control">
+                        </div>
+                        <div class="row">
+                            <select id="category-select2">
+                                <!-- Dữ liệu Categories sẽ được hiển thị ở đây -->
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnUpdate" class="btn btn-primary">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $(".modal .close, .modal button.btn-secondary").click(function () {
+            $(this).closest(".modal").modal("hide");
+        });
+        // Gọi API để lấy danh sách Products
+        loadProductList();
+
+        //load add modal
+        $("#btnAdd").click(function () {
+            $("#modalAdd").modal("show");
+            // Gọi API để lấy danh sách Categories và điền vào dropdown
+            loadCategories("#category-select1", 1);
+        });
+
+        //load edit modal
+        $(".table").on('click', '.btnEdit', function () {
+            var productId = $(this).attr("data-Id");
+            $("#modalEdit").modal("show");
+
+            // Call getProductById to get product details
+            getProductById(productId, function (product) {
+                $('#txtProductId2').val(product.productId);
+                $('#txtName2').val(product.productName);
+                $('#txtUnitPrice2').val(product.unitPrice);
+                $('#txtUnitInStock2').val(product.unitsInStock);
+                $('#txtImage2').val(product.image);
+                loadCategories("#category-select2", product.categoryId);
+            });
+        });
+
+        //add
+        $("#btnInsert").click(function () {
+            var product = {
+                "ProductId": 0,
+                "ProductName": $("#txtName1").val(),
+                "UnitPrice": $("#txtUnitPrice1").val(),
+                "UnitsInStock": $("#txtUnitInStock1").val(),
+                "Image": $("#txtImage1").val(),
+                "CategoryId": $("#category-select1").val()
+            }
+            $.ajax({
+                type: "POST",
+                url: 'https://localhost:7187/api/Products',
+                data: JSON.stringify(product),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                cache: false,
+                success: function (data) {
+                    loadProductList();
+                    $("#modalAdd").modal("hide");
+                },
+            });
+        });
+
+        //edit
+        $("#btnUpdate").click(function () {
+            var product = {
+                "ProductId": $("#txtProductId2").val(),
+                "ProductName": $("#txtName2").val(),
+                "UnitPrice": $("#txtUnitPrice2").val(),
+                "UnitsInStock": $("#txtUnitInStock2").val(),
+                "Image": $("#txtImage2").val(),
+                "CategoryId": $("#category-select2").val()
+            }
+            $.ajax({
+                type: "PUT",
+                url: 'https://localhost:7187/api/Products/' + product.ProductId,
+                data: JSON.stringify(product),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                cache: false,
+                success: function (data) {
+                    loadProductList();
+                    $("#modalEdit").modal("hide");
+                },
+            });
+        });
+
+        //delete
+        $(".table").on('click', '.btnDelete', function () {
+            var productId = $(this).attr("data-Id");
+            $.ajax({
+                type: "DELETE",
+                url: "https://localhost:7187/api/Products/" + productId,
+
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    loadProductList();
+                },
+                failure: function (response) {
+                    alert(response.d);
+                },
+                error: function (response) {
+                    alert(response.d);
+                }
+            });
+        });
+
+    });
+
+    // Function load products
+    function loadProductList() {
+        $.ajax({
+            url: 'https://localhost:7187/api/Products',
+            type: 'GET',
+            dataType: 'json',
+            success: function (products) {
+                var productContainer = $('#product-container').find('tbody');
+                productContainer.empty();
+
+                // Hiển thị dữ liệu Products trong bảng
+                $.each(products, function (index, product) {
+                    var row = '<tr>' +
+                        '<td>' + product.productId + '</td>' +
+                        '<td>' + product.productName + '</td>' +
+                        '<td>' + product.unitPrice + '</td>' +
+                        '<td>' + product.unitsInStock + '</td>' +
+                        '<td>' + product.image + '</td>' +
+                        '<td>' + (product.category ? product.category.categoryName : 'N/A') + '</td>' +
+                        '<td>' + '<button class="btn btn-info btn-sm btnEdit" data-Id=' + product.productId + '>' + 'Edit' + '</button>' + '</td>' +
+                        '<td>' + '<button class="btn btn-info btn-sm btnDelete" data-Id=' + product.productId + '>' + 'Delete' + '</button>' + '</td>' +
+                        '</tr>';
+                    productContainer.append(row);
+                });
+            }
+        });
+    }
+
+    // Function to get product by ID
+    function getProductById(productId, callback) {
+        $.ajax({
+            url: 'https://localhost:7187/api/Products/' + productId,
+            type: 'GET',
+            dataType: 'json',
+            success: function (product) {
+                callback(product);
+            },
+            error: function (error) {
+                console.error('Error loading product:', error);
+            }
+        });
+    }
+
+    //Function load categories
+    function loadCategories(selector, selectedCategoryId) {
+        $.ajax({
+            url: 'https://localhost:7187/api/Categories',
+            type: 'GET',
+            dataType: 'json',
+            success: function (categories) {
+                var categorySelect = $(selector);
+                categorySelect.empty();
+
+                // Hiển thị dữ liệu Categories trong dropdown
+                $.each(categories, function (index, category) {
+                    var option = $('<option>', {
+                        value: category.categoryId,
+                        text: category.categoryName
+                    });
+
+                    // Check if this category is selected
+                    if (category.categoryId == selectedCategoryId) {
+                        option.attr('selected', 'selected');
+                    }
+
+                    categorySelect.append(option);
+                });
+            },
+            error: function (error) {
+                console.error('Error loading categories:', error);
+            }
+        });
+    }
+
+</script>

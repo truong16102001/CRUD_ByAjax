@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33122.133
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessObject", "BusinessObject\BusinessObject.csproj", "{1D723946-AD41-45F8-AC2F-DDCCB368225D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "WebAPI\WebAPI.csproj", "{303A9E32-2E93-43B8-94ED-0A3F56B490B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClient", "WebClient\WebClient.csproj", "{BE895EEF-6FEF-460F-A8CD-89F8BDE1172B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1D723946-AD41-45F8-AC2F-DDCCB368225D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D723946-AD41-45F8-AC2F-DDCCB368225D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D723946-AD41-45F8-AC2F-DDCCB368225D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D723946-AD41-45F8-AC2F-DDCCB368225D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{303A9E32-2E93-43B8-94ED-0A3F56B490B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{303A9E32-2E93-43B8-94ED-0A3F56B490B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{303A9E32-2E93-43B8-94ED-0A3F56B490B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{303A9E32-2E93-43B8-94ED-0A3F56B490B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE895EEF-6FEF-460F-A8CD-89F8BDE1172B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE895EEF-6FEF-460F-A8CD-89F8BDE1172B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE895EEF-6FEF-460F-A8CD-89F8BDE1172B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE895EEF-6FEF-460F-A8CD-89F8BDE1172B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {02470711-1333-4313-9617-5EEA19E9FE7B}
+	EndGlobalSection
+EndGlobal
